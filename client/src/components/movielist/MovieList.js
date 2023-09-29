@@ -7,8 +7,13 @@ const MovieList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const query = useRef(null);
 
+  const movielist = movies.length ? (
+    movies.map((movie) => <MovieListItem key={movie.id} {...movie} />)
+  ) : (
+    <div>No movie available</div>
+  );
+
   const onSearch = (e) => {
-    console.log(query.current.value);
     e.preventDefault();
     setIsLoading(true);
     axios
@@ -18,6 +23,7 @@ const MovieList = () => {
         setIsLoading(false);
       })
       .catch(() => {
+        setMovies([]);
         setIsLoading(false);
       });
   };
@@ -55,7 +61,6 @@ const MovieList = () => {
             className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Search"
             ref={query}
-            required
           />
           {isLoading ? (
             <button
@@ -94,11 +99,11 @@ const MovieList = () => {
       </form>
       <div>
         {isLoading ? (
-          <div class="text-center">
+          <div className="text-center">
             <div role="status">
               <svg
                 aria-hidden="true"
-                class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                className="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -112,11 +117,11 @@ const MovieList = () => {
                   fill="currentFill"
                 />
               </svg>
-              <span class="sr-only">Loading...</span>
+              <span className="sr-only">Loading...</span>
             </div>
           </div>
         ) : (
-          movies.map((movie) => <MovieListItem key={movie.id} {...movie} />)
+          movielist
         )}
       </div>
     </div>
