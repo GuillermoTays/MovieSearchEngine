@@ -12,7 +12,7 @@ const MovieList = () => {
     axios
       .get(`http://localhost:5000/movies`)
       .then((res) => {
-        //setMovies(res.data.results);
+        setMovies(res.data.results);
         setIsLoading(false);
       })
       .catch(() => {
@@ -21,21 +21,15 @@ const MovieList = () => {
       });
   }, []);
 
-  const movielist = movies.length ? (
-    movies.map((movie) => <MovieListItem key={movie.id} {...movie} />)
+  const movieList = movies.length ? (
+    <div>
+      {movies.map((movie) => (
+        <MovieListItem key={movie.id} {...movie} />
+      ))}
+    </div>
   ) : (
     <div>No movie available</div>
   );
-
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return function () {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func();
-      }, delay);
-    };
-  };
 
   const onQueryChange = (e) => {
     setQuery(e.target.value);
@@ -43,25 +37,21 @@ const MovieList = () => {
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      onSearch();
+      setIsLoading(true);
+      axios
+        .get(`http://localhost:5000/movies/${query}`)
+        .then((res) => {
+          setMovies(res.data.results);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setMovies([]);
+          setIsLoading(false);
+        });
     }, 300);
 
     return () => clearTimeout(timerId);
   }, [query]);
-
-  const onSearch = () => {
-    setIsLoading(true);
-    axios
-      .get(`http://localhost:5000/movies/${query}`)
-      .then((res) => {
-        setMovies(res.data.results);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setMovies([]);
-        setIsLoading(false);
-      });
-  };
 
   return (
     <div>
@@ -123,7 +113,7 @@ const MovieList = () => {
             </div>
           </div>
         ) : (
-          movielist
+          movieList
         )}
       </div>
     </div>
